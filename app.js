@@ -354,53 +354,63 @@ function parseMetOfficeForecast(html) {
   const now = new Date();
   const days = [];
   
-  // Generate 7 days of forecast data
+  // Build 7 days of forecast data from explicit Met Office values only
   for (let i = 0; i < 7; i++) {
     const dateObj = new Date(now);
     dateObj.setDate(dateObj.getDate() + i);
     const dateIso = dateObj.toISOString().slice(0, 10);
     const dayLabels = ['Today', 'Fri', 'Sat', 'Sun', 'Mon', 'Tue', 'Wed'];
     
-    // Try to extract real data from HTML
-    let maxTemp = 14 + Math.floor(Math.random() * 8);
-    let minTemp = 8 + Math.floor(Math.random() * 6);
-    let wind = 10 + Math.floor(Math.random() * 18);
-    let gust = 16 + Math.floor(Math.random() * 22);
-    let rain = Math.floor(Math.random() * 100);
-    
-    // Attempt to parse temperature from HTML patterns
+    // Extract real data from HTML without inventing fallback values.
+    let maxTemp = null;
+    let minTemp = null;
+    let wind = null;
+    let gust = null;
+    let rain = null;
+    let direction = null;
+    let onshoreRisk = null;
+
     const tempMatches = html.match(/(\d+)°/g) || [];
     if (tempMatches.length > i) {
       maxTemp = parseInt(tempMatches[i], 10);
     }
-    
-    // Attempt to parse wind data
+
     const windMatch = html.match(/wind[^0-9]*(\d+)\s*mph/i);
     if (windMatch && i === 0) {
       wind = parseInt(windMatch[1], 10);
     }
-    
+
     const gustMatch = html.match(/gust[^0-9]*(\d+)\s*mph/i);
     if (gustMatch && i === 0) {
       gust = parseInt(gustMatch[1], 10);
     }
-    
+
     const rainMatch = html.match(/rain[^0-9]*(\d+)\s*%/i);
     if (rainMatch && i === 0) {
       rain = parseInt(rainMatch[1], 10);
     }
-    
+
+    const directionMatch = html.match(/(?:wind|direction)[^>\d]*(north|south|east|west|northwest|northeast|southwest|southeast)/i);
+    if (directionMatch) {
+      direction = directionMatch[1].toLowerCase();
+    }
+
+    const riskMatch = html.match(/onshore|offshore/i);
+    if (riskMatch) {
+      onshoreRisk = riskMatch[0].toLowerCase();
+    }
+
     days.push({
       label: dayLabels[i],
       date_iso: dateIso,
       max_temp_c: maxTemp,
       min_temp_c: minTemp,
-      min_temp_feels_like_c: minTemp - 2,
+      min_temp_feels_like_c: minTemp != null ? minTemp - 2 : null,
       max_wind_mph: wind,
       max_gust_mph: gust,
       max_precip_pct: rain,
-      dominant_direction_text: ['west', 'southwest', 'south', 'southeast'][Math.floor(Math.random() * 4)],
-      onshore_risk: 'unknown',
+      dominant_direction_text: direction,
+      onshore_risk: onshoreRisk,
       source_notes: ['web scraped from Met Office']
     });
   }
