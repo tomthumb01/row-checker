@@ -44,6 +44,8 @@ button, input, select { font: inherit; }
 .field-input { width: 100%; padding: 13px 14px; border-radius: 14px; border: 1px solid var(--line); background: #fbfdff; color: var(--text); }
 .field-input:focus { outline: 3px solid rgba(10,132,255,.12); border-color: #b6d8ff; }
 .form-grid { display: grid; gap: 16px; }
+.hour-range-row { display: flex; align-items: center; gap: 12px; }
+.hour-range-row input[type="range"] { flex: 1; }
 .form-grid.two-col { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .thresholds-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .days-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 18px; }
@@ -55,13 +57,10 @@ button, input, select { font: inherit; }
 .day-label { font-weight: 800; font-size: 15px; margin-bottom: 6px; }
 .day-date { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
 .day-mini { font-size: 12px; color: #3f566e; line-height: 1.45; }
-.result-card { position: sticky; top: 18px; overflow: hidden; }
-.result-card::before {
-  content: ''; position: absolute; inset: 0 0 auto 0; height: 6px; background: linear-gradient(90deg, #bccad6 0%, #bccad6 100%);
-}
-.result-card.status-likely::before { background: linear-gradient(90deg, #27ae60 0%, #6ed398 100%); }
-.result-card.status-marginal::before { background: linear-gradient(90deg, #ff9800 0%, #ffc165 100%); }
-.result-card.status-unlikely::before { background: linear-gradient(90deg, #d7263d 0%, #f36f82 100%); }
+.result-card { position: static; overflow: hidden; border: 3px solid rgba(221,231,240,0.9); }
+.result-card.status-likely { border-color: #27ae60; }
+.result-card.status-marginal { border-color: #ff9800; }
+.result-card.status-unlikely { border-color: #d7263d; }
 .result-topline { color: var(--muted); text-transform: uppercase; font-size: 12px; letter-spacing: .1em; font-weight: 800; }
 .result-band { margin-top: 14px; font-weight: 800; font-size: 34px; line-height: 1.05; }
 .result-score { margin-top: 6px; color: var(--muted); font-size: 15px; }
@@ -89,7 +88,6 @@ button, input, select { font: inherit; }
 @media (max-width: 1160px) {
   .layout { grid-template-columns: 1fr; }
   .hero { grid-template-columns: 1fr; }
-  .result-card { position: static; }
 }
 @media (max-width: 740px) {
   .shell { padding: 14px; }

@@ -15,8 +15,9 @@ const DEFAULT_THRESHOLDS = {
 
 const els = {
   refreshBtn: document.getElementById('refreshBtn'),
-  loadSampleBtn: document.getElementById('loadSampleBtn'),
   daySelect: document.getElementById('daySelect'),
+  hourRange: document.getElementById('hourRange'),
+  hourLabel: document.getElementById('hourLabel'),
   daysGrid: document.getElementById('daysGrid'),
   waveInput: document.getElementById('waveInput'),
   visibilityInput: document.getElementById('visibilityInput'),
@@ -38,6 +39,7 @@ const els = {
 let state = {
   forecast: null,
   selectedDayLabel: null,
+  selectedHour: 10,
 };
 
 function formatDate(iso) {
@@ -45,6 +47,19 @@ function formatDate(iso) {
   const d = new Date(iso + 'T12:00:00');
   if (Number.isNaN(d.getTime())) return iso;
   return d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+}
+
+function formatHourLabel(hour) {
+  return `${String(hour).padStart(2, '0')}:00`;
+}
+
+function getForecastAtHour(day, hour) {
+  if (!day) return null;
+  if (Array.isArray(day.hourly) && day.hourly.length) {
+    const selected = day.hourly.find(h => h.hour === hour) || day.hourly[0];
+    return { ...day, ...selected };
+  }
+  return day;
 }
 
 function setThresholdInputs(values) {
@@ -116,17 +131,19 @@ function renderSelectedDaySummary() {
     els.summaryTab.innerHTML = '<p>No forecast loaded yet.</p>';
     return;
   }
+  const forecastAtHour = getForecastAtHour(day, state.selectedHour);
   els.summaryTab.innerHTML = `
     <ul class="info-list">
       <li><strong>Day:</strong> ${escapeHtml(day.label)} (${escapeHtml(formatDate(day.date_iso))})</li>
-      <li><strong>Max temperature:</strong> ${day.max_temp_c ?? 'Not parsed'}°C</li>
-      <li><strong>Min temperature:</strong> ${day.min_temp_c ?? 'Not parsed'}°C</li>
-      <li><strong>Min feels-like:</strong> ${day.min_temp_feels_like_c ?? 'Not parsed'}°C</li>
-      <li><strong>Max sustained wind:</strong> ${day.max_wind_mph ?? 'Not parsed'} mph</li>
-      <li><strong>Max gust:</strong> ${day.max_gust_mph ?? 'Not parsed'} mph</li>
-      <li><strong>Max precipitation chance:</strong> ${day.max_precip_pct ?? 'Not parsed'}%</li>
-      <li><strong>Direction / beach hint:</strong> ${escapeHtml(day.dominant_direction_text || 'Not parsed')}</li>
-      <li><strong>Interpreted direction risk:</strong> ${escapeHtml(day.onshore_risk || 'unknown')}</li>
+      <li><strong>Selected time:</strong> ${escapeHtml(formatHourLabel(state.selectedHour))}${!Array.isArray(day.hourly) ? ' (daily peak values shown)' : ''}</li>
+      <li><strong>Max temperature:</strong> ${forecastAtHour.max_temp_c ?? 'Not parsed'}°C</li>
+      <li><strong>Min temperature:</strong> ${forecastAtHour.min_temp_c ?? 'Not parsed'}°C</li>
+      <li><strong>Min feels-like:</strong> ${forecastAtHour.min_temp_feels_like_c ?? 'Not parsed'}°C</li>
+      <li><strong>Max sustained wind:</strong> ${forecastAtHour.max_wind_mph ?? 'Not parsed'} mph</li>
+      <li><strong>Max gust:</strong> ${forecastAtHour.max_gust_mph ?? 'Not parsed'} mph</li>
+      <li><strong>Max precipitation chance:</strong> ${forecastAtHour.max_precip_pct ?? 'Not parsed'}%</li>
+      <li><strong>Direction / beach hint:</strong> ${escapeHtml(forecastAtHour.dominant_direction_text || day.dominant_direction_text || 'Not parsed')}</li>
+      <li><strong>Interpreted direction risk:</strong> ${escapeHtml(forecastAtHour.onshore_risk || day.onshore_risk || 'unknown')}</li>
       <li><strong>Parsed data fields:</strong> ${escapeHtml((day.source_notes || []).join(', ') || 'very limited')}</li>
     </ul>
   `;
@@ -260,8 +277,9 @@ function renderPolicyTab() {
 }
 
 function runCheck() {
-  const day = getSelectedDay();
-  if (!day) return;
+  const selectedDay = getSelectedDay();
+  if (!selectedDay) return;
+  const day = getForecastAtHour(selectedDay, state.selectedHour);
 
   const wave = els.waveInput.value ? Number(els.waveInput.value) : null;
   const visibility = els.visibilityInput.value ? Number(els.visibilityInput.value) : null;
@@ -304,18 +322,15 @@ async function fetchLiveForecast() {
     const res = await fetch('./api/metoffice-forecast.json', { cache: 'no-store' });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
+    if (typeof data.source === 'string' && data.source.includes('Replace this stub')) {
+      throw new Error('Backend response appears to be the stub placeholder.');
+    }
     setForecastData(data, 'Live backend forecast');
   } catch (err) {
     console.error(err);
-    els.lastUpdatedChip.textContent = 'Live backend unavailable — load sample data';
-    alert('Live forecast could not be loaded. Use the sample data button for local preview, or wire the app to a backend endpoint as shown in the deployment guide.');
+    els.lastUpdatedChip.textContent = 'Live backend unavailable';
+    alert('Live forecast could not be loaded from the backend. Check your API route or backend configuration.');
   }
-}
-
-async function loadSampleData() {
-  const res = await fetch('./sample-forecast.json', { cache: 'no-store' });
-  const data = await res.json();
-  setForecastData(data, 'Sample forecast loaded');
 }
 
 function wireTabs() {
@@ -333,14 +348,20 @@ function init() {
   setThresholdInputs(DEFAULT_THRESHOLDS);
   wireTabs();
   renderPolicyTab();
+  els.hourLabel.textContent = formatHourLabel(state.selectedHour);
 
   els.refreshBtn.addEventListener('click', fetchLiveForecast);
-  els.loadSampleBtn.addEventListener('click', loadSampleData);
   els.resetThresholdsBtn.addEventListener('click', () => { setThresholdInputs(DEFAULT_THRESHOLDS); runCheck(); });
   els.checkBtn.addEventListener('click', runCheck);
   els.daySelect.addEventListener('change', () => {
     state.selectedDayLabel = els.daySelect.value;
     renderDays();
+    renderSelectedDaySummary();
+    runCheck();
+  });
+  els.hourRange.addEventListener('input', () => {
+    state.selectedHour = Number(els.hourRange.value);
+    els.hourLabel.textContent = formatHourLabel(state.selectedHour);
     renderSelectedDaySummary();
     runCheck();
   });
@@ -350,7 +371,7 @@ function init() {
   });
   document.querySelectorAll('.threshold').forEach(el => el.addEventListener('input', runCheck));
 
-  loadSampleData();
+  fetchLiveForecast();
 }
 
 init();

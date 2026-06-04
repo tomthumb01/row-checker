@@ -23,6 +23,10 @@ Host the front-end, then connect it to a **small backend endpoint** that fetches
 The front-end is already written to request:
 - `./api/metoffice-forecast.json`
 
+A serverless function is provided at `api/metoffice-forecast` that returns the live forecast at `/api/metoffice-forecast.json`.
+
+This function requires a Met Office subscription key in the environment variable `METOFFICE_APIKEY`.
+
 So in production you can:
 - replace that file with a real backend route, or
 - change the fetch URL in `app.js` to your deployed API.

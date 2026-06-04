@@ -1,0 +1,550 @@
+{
+    "openapi": "3.0.1",
+    "info": {
+        "title": "Site Specific Forecast",
+        "description": "This API provides weather forecast data for a requested coordinate defined by a latitude and longitude. The format of the data is GeoJSON.",
+        "contact": {
+            "name": "Met Office",
+            "url": "https://www.metoffice.gov.uk/"
+        },
+        "version": "v0"
+    },
+    "security": [
+      {
+        "APIKey": []
+      }
+    ],
+    "paths": {
+        "/point/hourly": {
+            "get": {
+                "summary": "Find nearest forecast data that matches the request criteria",
+                "operationId": "getForecastForPointUsingGET_1",
+                "parameters": [
+                    {
+                        "name": "dataSource",
+                        "in": "query",
+                        "description": "The request data source must be BD1.",
+                        "schema": {}
+                    },
+                    {
+                        "name": "excludeParameterMetadata",
+                        "in": "query",
+                        "description": "If true, exclude parameter metadata in the response. If false or undefined, the parameter metadata is returned.",
+                        "schema": {}
+                    },
+                    {
+                        "name": "includeLocationName",
+                        "in": "query",
+                        "description": "If true, include location name in the response. If false or undefined, no location name is returned.",
+                        "schema": {}
+                    },
+                    {
+                        "name": "latitude",
+                        "in": "query",
+                        "description": "The request latitude value in range -85/+85 expressed as a decimal fraction.",
+                        "required": true,
+                        "schema": {}
+                    },
+                    {
+                        "name": "longitude",
+                        "in": "query",
+                        "description": "The request longitude value in range -180/+180 expressed as a decimal fraction.",
+                        "required": true,
+                        "schema": {}
+                    }
+              ],
+                "responses": {
+                    "200": {
+                        "description": "The request was fulfilled successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SpotForecastFeatureCollection"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "The server could not service the request because it was malformed.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/VndError"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Access to the requested URL is forbidden.",
+                        "content": {}
+                    },
+                    "404": {
+                        "description": "The server could not service the request because the requested resource did not exist",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/VndError"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "description": "The server could not service the request because it does not support the requested HTTP action - only get requests are supported",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/VndError"
+                                }
+                            }
+                        }
+                    },
+                    "415": {
+                        "description": "The server could not service the request because the media type requested is not supported - this service only exposes json data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/VndError"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "The server encountered an internal error or misconfiguration and was unable to complete the request - this is not a recoverable error for a user of the API",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/VndError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+      "/point/three-hourly": {
+        "get": {
+          "summary": "Find nearest forecast data that matches the request criteria",
+          "operationId": "getForecastForPointUsingGET_1",
+          "parameters": [
+            {
+              "name": "dataSource",
+              "in": "query",
+              "description": "The request data source must be BD1.",
+              "schema": {}
+            },
+            {
+              "name": "excludeParameterMetadata",
+              "in": "query",
+              "description": "If true, exclude parameter metadata in the response. If false or undefined, the parameter metadata is returned.",
+              "schema": {}
+            },
+            {
+              "name": "includeLocationName",
+              "in": "query",
+              "description": "If true, include location name in the response. If false or undefined, no location name is returned.",
+              "schema": {}
+            },
+            {
+              "name": "latitude",
+              "in": "query",
+              "description": "The request latitude value in range -85/+85 expressed as a decimal fraction.",
+              "required": true,
+              "schema": {}
+            },
+            {
+              "name": "longitude",
+              "in": "query",
+              "description": "The request longitude value in range -180/+180 expressed as a decimal fraction.",
+              "required": true,
+              "schema": {}
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "The request was fulfilled successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/SpotForecastFeatureCollection"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "The server could not service the request because it was malformed.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/VndError"
+                  }
+                }
+              }
+            },
+            "403": {
+              "description": "Access to the requested URL is forbidden.",
+              "content": {}
+            },
+            "404": {
+              "description": "The server could not service the request because the requested resource did not exist",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/VndError"
+                  }
+                }
+              }
+            },
+            "405": {
+              "description": "The server could not service the request because it does not support the requested HTTP action - only get requests are supported",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/VndError"
+                  }
+                }
+              }
+            },
+            "415": {
+              "description": "The server could not service the request because the media type requested is not supported - this service only exposes json data",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/VndError"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "The server encountered an internal error or misconfiguration and was unable to complete the request - this is not a recoverable error for a user of the API",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/VndError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/point/daily": {
+        "get": {
+          "summary": "Find nearest forecast data that matches the request criteria",
+          "operationId": "getForecastForPointUsingGET_1",
+          "parameters": [
+            {
+              "name": "dataSource",
+              "in": "query",
+              "description": "The request data source must be BD1.",
+              "schema": {}
+            },
+            {
+              "name": "excludeParameterMetadata",
+              "in": "query",
+              "description": "If true, exclude parameter metadata in the response. If false or undefined, the parameter metadata is returned.",
+              "schema": {}
+            },
+            {
+              "name": "includeLocationName",
+              "in": "query",
+              "description": "If true, include location name in the response. If false or undefined, no location name is returned.",
+              "schema": {}
+            },
+            {
+              "name": "latitude",
+              "in": "query",
+              "description": "The request latitude value in range -85/+85 expressed as a decimal fraction.",
+              "required": true,
+              "schema": {}
+            },
+            {
+              "name": "longitude",
+              "in": "query",
+              "description": "The request longitude value in range -180/+180 expressed as a decimal fraction.",
+              "required": true,
+              "schema": {}
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "The request was fulfilled successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/SpotForecastFeatureCollection"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "The server could not service the request because it was malformed.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/VndError"
+                  }
+                }
+              }
+            },
+            "403": {
+              "description": "Access to the requested URL is forbidden.",
+              "content": {}
+            },
+            "404": {
+              "description": "The server could not service the request because the requested resource did not exist",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/VndError"
+                  }
+                }
+              }
+            },
+            "405": {
+              "description": "The server could not service the request because it does not support the requested HTTP action - only get requests are supported",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/VndError"
+                  }
+                }
+              }
+            },
+            "415": {
+              "description": "The server could not service the request because the media type requested is not supported - this service only exposes json data",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/VndError"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "The server encountered an internal error or misconfiguration and was unable to complete the request - this is not a recoverable error for a user of the API",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/VndError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "components": {
+        "schemas": {
+            "Feature": {
+                "title": "Feature",
+                "required": [
+                    "geometry",
+                    "properties",
+                    "type"
+                ],
+                "type": "object",
+                "properties": {
+                    "geometry": {
+                        "$ref": "#/components/schemas/Point"
+                    },
+                    "properties": {
+                        "$ref": "#/components/schemas/Properties"
+                    },
+                    "type": {
+                        "type": "string",
+                        "description": "The GeoJSON type identifier",
+                        "example": "Feature"
+                    }
+                },
+                "description": "A feature object with mandatory geometry and properties fields"
+            },
+            "Location": {
+                "title": "Location",
+                "type": "object",
+                "properties": {
+                    "licence": {
+                        "type": "string",
+                        "description": "The licence for the forecast location name",
+                        "example": "Data \u00a9 OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright"
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "The forecast location name",
+                        "example": "St Thomas, Devon, South West England, England, GB"
+                    }
+                }
+            },
+            "ParameterDetails": {
+                "title": "ParameterDetails",
+                "type": "object",
+                "properties": {
+                    "description": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string"
+                    },
+                    "unit": {
+                        "$ref": "#/components/schemas/Unit"
+                    }
+                }
+            },
+            "Point": {
+                "title": "Point",
+                "required": [
+                    "coordinates",
+                    "type"
+                ],
+                "type": "object",
+                "properties": {
+                    "coordinates": {
+                        "type": "array",
+                        "description": "The longitude, latitude and elevation values for the point",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "type": {
+                        "type": "string",
+                        "description": "The GeoJSON type identifier",
+                        "example": "Point"
+                    }
+                }
+            },
+            "Properties": {
+                "title": "Properties",
+                "required": [
+                    "modelRunDate",
+                    "requestPointDistance",
+                    "timeSeries"
+                ],
+                "type": "object",
+                "properties": {
+                    "location": {
+                        "$ref": "#/components/schemas/Location"
+                    },
+                    "modelRunDate": {
+                        "type": "string",
+                        "description": "The model run date in UTC",
+                        "example": "2019-01-31T12:00Z"
+                    },
+                    "requestPointDistance": {
+                        "type": "number",
+                        "description": "The distance from the requested point in metres"
+                    },
+                    "timeSeries": {
+                        "type": "object",
+                        "properties": {},
+                        "description": "A time step ordered list  of forecast parameters and associated values"
+                    }
+                }
+            },
+            "SpotForecastFeatureCollection": {
+                "title": "SpotForecastFeatureCollection",
+                "required": [
+                    "features",
+                    "parameters",
+                    "type"
+                ],
+                "type": "object",
+                "properties": {
+                    "features": {
+                        "type": "array",
+                        "description": "A list of feature objects",
+                        "items": {
+                            "$ref": "#/components/schemas/Feature"
+                        }
+                    },
+                    "parameters": {
+                        "type": "array",
+                        "description": "Forecast parameter metadata for all possible forecast parameters in response - each forecast parameter has a nested object containing a unit of measurement, using standard unit representation as defined by UCUM - http://unitsofmeasure.org/ucum.html - and an optional parameter definition",
+                        "items": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "$ref": "#/components/schemas/ParameterDetails"
+                            }
+                        }
+                    },
+                    "type": {
+                        "type": "string",
+                        "description": "The GeoJSON type identifier",
+                        "example": "FeatureCollection"
+                    }
+                },
+                "description": "A feature collection object, must have a member array of features"
+            },
+            "Symbol": {
+                "title": "Symbol",
+                "type": "object",
+                "properties": {
+                    "type": {
+                        "type": "string"
+                    },
+                    "value": {
+                        "type": "string"
+                    }
+                }
+            },
+            "TimeSeries": {
+                "title": "TimeSeries",
+                "required": [
+                    "time"
+                ],
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "number"
+                        },
+                        "description": "A map of forecast parameters and associated values"
+                    },
+                    "time": {
+                        "type": "string",
+                        "description": "Time of the forecast in UTC",
+                        "example": "2019-01-31T12:00Z"
+                    }
+                }
+            },
+            "Unit": {
+                "title": "Unit",
+                "required": [
+                    "label",
+                    "symbol"
+                ],
+                "type": "object",
+                "properties": {
+                    "label": {
+                        "type": "string",
+                        "description": "The name of the unit",
+                        "example": "degrees Celsius"
+                    },
+                    "symbol": {
+                        "$ref": "#/components/schemas/Symbol"
+                    }
+                }
+            },
+            "VndError": {
+                "title": "VndError",
+                "type": "object",
+                "properties": {
+                    "logref": {
+                        "type": "string"
+                    },
+                    "message": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "securitySchemes": {
+          "APIKey": {
+            "type": "apiKey",
+            "description": "The API Key generated with your Subscription in Weather DataHub, this must be set as 'apikey' in your header.",
+            "name": "apikey",
+            "in": "header"
+          }
+        }
+    }
+}

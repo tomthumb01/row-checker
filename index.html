@@ -16,7 +16,7 @@
         <div class="eyebrow">Lyme Regis Gig Club</div>
         <h1>Row Checker</h1>
         <p class="hero-copy">
-          A cleaner web-based advisory tool that checks how likely a row is to go ahead for a chosen day using the Met Office Lyme Regis forecast, plus local judgement inputs.
+          Choose your date and press "Check likelihood" to get a traffic-light advisory on whether conditions are suitable for rowing, based on the Met Office forecast and your local knowledge.
         </p>
         <div class="hero-badges">
           <span class="badge badge-blue">Met Office source</span>
@@ -28,7 +28,7 @@
       <div class="hero-side">
         <div class="summary-chip" id="lastUpdatedChip">Forecast not loaded</div>
         <button class="primary-btn" id="refreshBtn">Refresh Met Office forecast</button>
-        <p class="tiny-note">For browser-only testing, the app can also load bundled sample data if a live backend is not available.</p>
+        <p class="tiny-note">Forecast is requested from the backend endpoint and refreshed from the Met Office source.</p>
       </div>
     </header>
 
@@ -37,11 +37,18 @@
         <div class="card section-card">
           <div class="section-header">
             <h2>1) Forecast day</h2>
-            <button class="ghost-btn" id="loadSampleBtn">Load sample data</button>
           </div>
 
           <label class="field-label" for="daySelect">Choose day</label>
           <select id="daySelect" class="field-input"></select>
+
+          <div class="hour-selector">
+            <label class="field-label" for="hourRange">Choose hour</label>
+            <div class="hour-range-row">
+              <input id="hourRange" class="field-input" type="range" min="7" max="18" value="10" step="1" />
+              <span id="hourLabel">10:00</span>
+            </div>
+          </div>
 
           <div class="days-grid" id="daysGrid"></div>
         </div>
