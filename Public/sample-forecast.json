@@ -1,0 +1,139 @@
+{
+  "source": "Met Office Lyme Regis sample data",
+  "updated_text": "5:58am on 4 June 2026",
+  "days": [
+    {
+      "label": "Today",
+      "date_iso": "2026-06-04",
+      "max_temp_c": 18,
+      "min_temp_c": 9,
+      "max_wind_mph": 22,
+      "max_gust_mph": 33,
+      "max_precip_pct": 90,
+      "min_temp_feels_like_c": 10,
+      "dominant_direction_text": "west southwest alongshore / west cross-offshore later",
+      "onshore_risk": "alongshore",
+      "source_notes": [
+        "wind",
+        "gust",
+        "feels_like",
+        "precip",
+        "direction"
+      ]
+    },
+    {
+      "label": "Fri",
+      "date_iso": "2026-06-05",
+      "max_temp_c": 16,
+      "min_temp_c": 12,
+      "max_wind_mph": 18,
+      "max_gust_mph": 28,
+      "max_precip_pct": 90,
+      "min_temp_feels_like_c": 7,
+      "dominant_direction_text": "west cross-offshore early, south southwest cross-onshore later",
+      "onshore_risk": "cross-onshore",
+      "source_notes": [
+        "wind",
+        "gust",
+        "feels_like",
+        "precip",
+        "direction"
+      ]
+    },
+    {
+      "label": "Sat",
+      "date_iso": "2026-06-06",
+      "max_temp_c": 18,
+      "min_temp_c": 10,
+      "max_wind_mph": 25,
+      "max_gust_mph": 39,
+      "max_precip_pct": 95,
+      "min_temp_feels_like_c": 9,
+      "dominant_direction_text": "south southeast onshore / southwest alongshore / west cross-offshore later",
+      "onshore_risk": "onshore",
+      "source_notes": [
+        "wind",
+        "gust",
+        "feels_like",
+        "precip",
+        "direction"
+      ]
+    },
+    {
+      "label": "Sun",
+      "date_iso": "2026-06-07",
+      "max_temp_c": 18,
+      "min_temp_c": 12,
+      "max_wind_mph": 17,
+      "max_gust_mph": 26,
+      "max_precip_pct": 10,
+      "min_temp_feels_like_c": 9,
+      "dominant_direction_text": "west cross-offshore to south southwest alongshore",
+      "onshore_risk": "offshore",
+      "source_notes": [
+        "wind",
+        "gust",
+        "feels_like",
+        "precip",
+        "direction"
+      ]
+    },
+    {
+      "label": "Mon",
+      "date_iso": "2026-06-08",
+      "max_temp_c": 18,
+      "min_temp_c": 9,
+      "max_wind_mph": 17,
+      "max_gust_mph": 31,
+      "max_precip_pct": 80,
+      "min_temp_feels_like_c": 8,
+      "dominant_direction_text": "south southwest cross-onshore / west cross-offshore later",
+      "onshore_risk": "cross-onshore",
+      "source_notes": [
+        "wind",
+        "gust",
+        "feels_like",
+        "precip",
+        "direction"
+      ]
+    },
+    {
+      "label": "Tue",
+      "date_iso": "2026-06-09",
+      "max_temp_c": 17,
+      "min_temp_c": 8,
+      "max_wind_mph": 14,
+      "max_gust_mph": 23,
+      "max_precip_pct": 30,
+      "min_temp_feels_like_c": 7,
+      "dominant_direction_text": "west southwest alongshore",
+      "onshore_risk": "alongshore",
+      "source_notes": [
+        "wind",
+        "gust",
+        "feels_like",
+        "precip",
+        "direction"
+      ]
+    },
+    {
+      "label": "Wed",
+      "date_iso": "2026-06-10",
+      "max_temp_c": 18,
+      "min_temp_c": 10,
+      "max_wind_mph": 13,
+      "max_gust_mph": 23,
+      "max_precip_pct": 30,
+      "min_temp_feels_like_c": 8,
+      "dominant_direction_text": "south southwest alongshore",
+      "onshore_risk": "alongshore",
+      "source_notes": [
+        "wind",
+        "gust",
+        "feels_like",
+        "precip",
+        "direction"
+      ]
+    }
+  ]
+}

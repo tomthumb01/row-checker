@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lyme Regis Row Checker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="shell">
+    <header class="hero card">
+      <div>
+        <div class="eyebrow">Lyme Regis Gig Club</div>
+        <h1>Row Checker</h1>
+        <p class="hero-copy">
+          A cleaner web-based advisory tool that checks how likely a row is to go ahead for a chosen day using the Met Office Lyme Regis forecast, plus local judgement inputs.
+        </p>
+        <div class="hero-badges">
+          <span class="badge badge-blue">Met Office source</span>
+          <span class="badge">Choose the day</span>
+          <span class="badge">Traffic-light output</span>
+          <span class="badge">Crew + local conditions</span>
+        </div>
+      </div>
+      <div class="hero-side">
+        <div class="summary-chip" id="lastUpdatedChip">Forecast not loaded</div>
+        <button class="primary-btn" id="refreshBtn">Refresh Met Office forecast</button>
+        <p class="tiny-note">For browser-only testing, the app can also load bundled sample data if a live backend is not available.</p>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="left-column">
+        <div class="card section-card">
+          <div class="section-header">
+            <h2>1) Forecast day</h2>
+            <button class="ghost-btn" id="loadSampleBtn">Load sample data</button>
+          </div>
+
+          <label class="field-label" for="daySelect">Choose day</label>
+          <select id="daySelect" class="field-input"></select>
+
+          <div class="days-grid" id="daysGrid"></div>
+        </div>
+
+        <div class="card section-card">
+          <div class="section-header">
+            <h2>2) Local refinements</h2>
+            <span class="helper-pill">Optional</span>
+          </div>
+
+          <div class="form-grid two-col">
+            <div>
+              <label class="field-label" for="waveInput">Wave height (m)</label>
+              <input id="waveInput" class="field-input" type="number" step="0.1" placeholder="e.g. 1.2" />
+            </div>
+            <div>
+              <label class="field-label" for="visibilityInput">Visibility (km)</label>
+              <input id="visibilityInput" class="field-input" type="number" step="0.1" placeholder="e.g. 6" />
+            </div>
+            <div>
+              <label class="field-label" for="tideRiskSelect">Tide risk</label>
+              <select id="tideRiskSelect" class="field-input">
+                <option value="0">Low / normal</option>
+                <option value="1">Moderate concern</option>
+                <option value="2">High concern</option>
+              </select>
+            </div>
+            <div>
+              <label class="field-label" for="crewExperienceSelect">Crew experience</label>
+              <select id="crewExperienceSelect" class="field-input">
+                <option value="mixed">Mixed</option>
+                <option value="novice">Novice</option>
+                <option value="experienced">Experienced</option>
+              </select>
+            </div>
+          </div>
+
+          <p class="support-text">
+            Use these fields to reflect local knowledge and waterside judgement that the forecast alone cannot capture.
+          </p>
+        </div>
+
+        <div class="card section-card">
+          <div class="section-header">
+            <h2>3) Advisory thresholds</h2>
+            <button class="ghost-btn" id="resetThresholdsBtn">Reset defaults</button>
+          </div>
+          <div class="form-grid thresholds-grid">
+            <div><label class="field-label">Wind amber (mph)</label><input class="field-input threshold" data-key="wind_amber" type="number" /></div>
+            <div><label class="field-label">Wind red (mph)</label><input class="field-input threshold" data-key="wind_red" type="number" /></div>
+            <div><label class="field-label">Gust amber (mph)</label><input class="field-input threshold" data-key="gust_amber" type="number" /></div>
+            <div><label class="field-label">Gust red (mph)</label><input class="field-input threshold" data-key="gust_red" type="number" /></div>
+            <div><label class="field-label">Rain amber (%)</label><input class="field-input threshold" data-key="rain_amber" type="number" /></div>
+            <div><label class="field-label">Rain red (%)</label><input class="field-input threshold" data-key="rain_red" type="number" /></div>
+            <div><label class="field-label">Cold amber (°C)</label><input class="field-input threshold" data-key="cold_amber" type="number" /></div>
+            <div><label class="field-label">Cold red (°C)</label><input class="field-input threshold" data-key="cold_red" type="number" /></div>
+            <div><label class="field-label">Wave amber (m)</label><input class="field-input threshold" data-key="wave_amber" type="number" step="0.1" /></div>
+            <div><label class="field-label">Wave red (m)</label><input class="field-input threshold" data-key="wave_red" type="number" step="0.1" /></div>
+            <div><label class="field-label">Visibility amber (km)</label><input class="field-input threshold" data-key="visibility_amber" type="number" step="0.1" /></div>
+            <div><label class="field-label">Visibility red (km)</label><input class="field-input threshold" data-key="visibility_red" type="number" step="0.1" /></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="right-column">
+        <div class="card result-card" id="resultCard">
+          <div class="result-topline">Advisory result</div>
+          <div class="result-band" id="resultBand">No result yet</div>
+          <div class="result-score" id="resultScore">Load forecast data to begin</div>
+          <p class="result-headline" id="resultHeadline">This tool is advisory only and should support, not replace, the first cox/s decision.</p>
+
+          <div class="result-actions">
+            <button class="primary-btn" id="checkBtn">Check likelihood</button>
+          </div>
+
+          <div class="metrics-grid" id="metricsGrid"></div>
+        </div>
+
+        <div class="card detail-card">
+          <div class="detail-tabs">
+            <button class="tab-btn active" data-tab="summary">Summary</button>
+            <button class="tab-btn" data-tab="reasons">Reasons</button>
+            <button class="tab-btn" data-tab="policy">Policy note</button>
+          </div>
+
+          <div class="tab-panel active" id="tab-summary"></div>
+          <div class="tab-panel" id="tab-reasons"></div>
+          <div class="tab-panel" id="tab-policy"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
