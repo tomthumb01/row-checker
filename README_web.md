@@ -23,12 +23,19 @@ Host the front-end, then connect it to a **small backend endpoint** that fetches
 The front-end is already written to request:
 - `./api/metoffice-forecast.json`
 
-A serverless function is provided at `api/metoffice-forecast` that returns the live forecast at `/api/metoffice-forecast.json`.
+This repo includes a local backend placeholder at `api/metoffice-forecast/index.js`, but the web app itself needs a server-side host to expose `/api/metoffice-forecast.json`.
 
-This function requires a Met Office subscription key in the environment variable `METOFFICE_APIKEY`.
+If you want to run the full app locally without installing Node, use the included Python server:
+
+```powershell
+python local_server.py
+```
+
+Then open:
+- `http://127.0.0.1:8000`
 
 So in production you can:
-- replace that file with a real backend route, or
+- replace the local server with your own backend route, or
 - change the fetch URL in `app.js` to your deployed API.
 
 ## Suggested zero-install deployment paths

@@ -343,6 +343,19 @@ function setForecastData(data, sourceLabel = 'Forecast loaded') {
   runCheck();
 }
 
+function showBackendFetchError(message) {
+  els.lastUpdatedChip.textContent = 'Forecast unavailable';
+  els.loadingIndicator.style.display = 'none';
+  els.resultCard.classList.remove('status-likely', 'status-marginal', 'status-unlikely');
+  els.resultBand.textContent = 'Forecast unavailable';
+  els.resultScore.textContent = 'Unable to load live forecast';
+  els.resultHeadline.textContent = 'A live backend is required to fetch Met Office data.';
+  els.metricsGrid.innerHTML = '';
+  els.summaryTab.innerHTML = `<p>${escapeHtml(message)}</p>`;
+  els.daysGrid.innerHTML = '';
+  els.daySelect.innerHTML = '';
+}
+
 async function fetchLiveForecast() {
   els.lastUpdatedChip.textContent = 'Fetching forecast…';
   els.loadingIndicator.style.display = 'flex';
@@ -362,10 +375,7 @@ async function fetchLiveForecast() {
     setForecastData(forecastData, 'Met Office (backend scraped)');
   } catch (err) {
     console.error('Forecast fetch error:', err);
-    els.loadingIndicator.style.display = 'none';
-    els.lastUpdatedChip.textContent = 'Using sample forecast';
-    // Load sample forecast as fallback
-    loadSampleForecast();
+    showBackendFetchError('Unable to fetch the live Met Office forecast backend. Ensure the local API server is running, or deploy the backend endpoint to the same origin as the app.');
   }
 }
 
