@@ -57,9 +57,19 @@ function formatHourLabel(hour) {
 
 function getForecastAtHour(day, hour) {
   if (!day) return null;
-  if (Array.isArray(day.hourly) && day.hourly.length) {
-    const selected = day.hourly.find(h => h.hour === hour) || day.hourly[0];
-    return { ...day, ...selected };
+  const hourly = Array.isArray(day.hourly) && day.hourly.length ? day.hourly : (Array.isArray(day.hours) ? day.hours : []);
+  if (hourly.length) {
+    const selected = hourly.find(h => h.hour === hour) || hourly[0];
+    return {
+      ...day,
+      ...selected,
+      max_wind_mph: selected.wind_mph ?? day.max_wind_mph,
+      max_gust_mph: selected.gust_mph ?? day.max_gust_mph,
+      max_precip_pct: selected.chance_of_rain_pct ?? day.max_precip_pct,
+      min_temp_feels_like_c: selected.feels_like_c ?? day.min_temp_feels_like_c,
+      dominant_direction_text: selected.direction_from ?? day.dominant_direction_text,
+      onshore_risk: selected.onshore_risk ?? day.onshore_risk,
+    };
   }
   return day;
 }
@@ -134,10 +144,17 @@ function renderSelectedDaySummary() {
     return;
   }
   const forecastAtHour = getForecastAtHour(day, state.selectedHour);
+  const hourly = Array.isArray(day.hourly) && day.hourly.length ? day.hourly : (Array.isArray(day.hours) ? day.hours : []);
+  const tideItems = Array.isArray(day.tides) && day.tides.length
+    ? day.tides.map(tide => `<li><strong>${escapeHtml(tide.type.toUpperCase())} tide:</strong> ${escapeHtml(tide.time)} at ${escapeHtml(String(tide.metres))} metres</li>`).join('')
+    : '<li>No tide data parsed.</li>';
+  const hourlyItems = hourly.length
+    ? hourly.map(hour => `<li><strong>${escapeHtml(hour.time || '—')}</strong> - Wind ${escapeHtml(String(hour.wind_mph ?? 'Not parsed'))} mph, gust ${escapeHtml(String(hour.gust_mph ?? 'Not parsed'))} mph, feels like ${escapeHtml(String(hour.feels_like_c ?? 'Not parsed'))}°C, rain ${escapeHtml(String(hour.chance_of_rain_pct ?? 'Not parsed'))}%, direction ${escapeHtml(hour.direction_from || 'Not parsed')}</li>`).join('')
+    : '<li>No hourly data parsed.</li>';
   els.summaryTab.innerHTML = `
     <ul class="info-list">
       <li><strong>Day:</strong> ${escapeHtml(day.label)} (${escapeHtml(formatDate(day.date_iso))})</li>
-      <li><strong>Selected time:</strong> ${escapeHtml(formatHourLabel(state.selectedHour))}${!Array.isArray(day.hourly) ? ' (daily peak values shown)' : ''}</li>
+      <li><strong>Selected time:</strong> ${escapeHtml(formatHourLabel(state.selectedHour))}${!hourly.length ? ' (daily peak values shown)' : ''}</li>
       <li><strong>Max temperature:</strong> ${forecastAtHour.max_temp_c ?? 'Not parsed'}°C</li>
       <li><strong>Min temperature:</strong> ${forecastAtHour.min_temp_c ?? 'Not parsed'}°C</li>
       <li><strong>Min feels-like:</strong> ${forecastAtHour.min_temp_feels_like_c ?? 'Not parsed'}°C</li>
@@ -148,6 +165,14 @@ function renderSelectedDaySummary() {
       <li><strong>Interpreted direction risk:</strong> ${escapeHtml(forecastAtHour.onshore_risk || day.onshore_risk || 'unknown')}</li>
       <li><strong>Parsed data fields:</strong> ${escapeHtml((day.source_notes || []).join(', ') || 'very limited')}</li>
     </ul>
+    <div class="summary-subsection">
+      <h3>Hourly forecast</h3>
+      <ul class="info-list">${hourlyItems}</ul>
+    </div>
+    <div class="summary-subsection">
+      <h3>Tides</h3>
+      <ul class="info-list">${tideItems}</ul>
+    </div>
   `;
 }
 
@@ -323,24 +348,18 @@ async function fetchLiveForecast() {
   els.loadingIndicator.style.display = 'flex';
   els.loadingText.textContent = 'Fetching forecast...';
   try {
-    // Scrape Met Office website directly
-    const metOfficeUrl = 'https://www.metoffice.gov.uk/weather/forecast/lyme-regis';
-    const response = await fetch(metOfficeUrl, {
-      cache: 'no-store',
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-      }
-    });
-    
+    // Request the backend scraper endpoint which fetches per-date Met Office pages.
+    const apiUrl = '/api/metoffice-forecast.json';
+    const response = await fetch(apiUrl, { cache: 'no-store' });
+
     if (!response.ok) {
-      throw new Error(`Failed to fetch Met Office website: ${response.status}`);
+      throw new Error(`Failed to fetch backend forecast: ${response.status}`);
     }
-    
-    const html = await response.text();
-    const forecastData = parseMetOfficeForecast(html);
-    
+
+    const forecastData = await response.json();
+
     els.loadingIndicator.style.display = 'none';
-    setForecastData(forecastData, 'Met Office (web scraped)');
+    setForecastData(forecastData, 'Met Office (backend scraped)');
   } catch (err) {
     console.error('Forecast fetch error:', err);
     els.loadingIndicator.style.display = 'none';
@@ -435,23 +454,25 @@ function loadSampleForecast() {
     days.push({
       label: dayLabels[i],
       date_iso: dateIso,
-      max_temp_c: 14 + Math.floor(Math.random() * 8),
-      min_temp_c: 8 + Math.floor(Math.random() * 6),
-      min_temp_feels_like_c: 9 + Math.floor(Math.random() * 5),
-      max_wind_mph: 12 + Math.floor(Math.random() * 16),
-      max_gust_mph: 18 + Math.floor(Math.random() * 20),
-      max_precip_pct: Math.floor(Math.random() * 100),
-      dominant_direction_text: ['west', 'southwest', 'south', 'southeast'][Math.floor(Math.random() * 4)],
-      onshore_risk: 'unknown',
-      source_notes: ['sample forecast']
+      max_temp_c: null,
+      min_temp_c: null,
+      min_temp_feels_like_c: null,
+      max_wind_mph: null,
+      max_gust_mph: null,
+      max_precip_pct: null,
+      dominant_direction_text: null,
+      onshore_risk: null,
+      hourly: [],
+      tides: [],
+      source_notes: ['fetch_failed']
     });
   }
   
   setForecastData({
-    source: 'Sample forecast',
+    source: 'Met Office forecast unavailable',
     updated_text: `Loaded ${now.toLocaleTimeString('en-GB')}`,
     days: days
-  }, 'Sample forecast (Met Office unavailable)');
+  }, 'Met Office unavailable');
 }
 
 function wireTabs() {
