@@ -28,6 +28,10 @@
       <div class="hero-side">
         <div class="summary-chip" id="lastUpdatedChip">Forecast not loaded</div>
         <button class="primary-btn" id="refreshBtn">Refresh Met Office forecast</button>
+        <div id="loadingIndicator" class="loading-indicator" style="display: none;">
+          <span class="loading-spinner"></span>
+          <span id="loadingText">Fetching forecast...</span>
+        </div>
         <p class="tiny-note">Forecast is requested from the backend endpoint and refreshed from the Met Office source.</p>
       </div>
     </header>

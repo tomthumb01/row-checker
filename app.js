@@ -31,6 +31,8 @@ const els = {
   resultHeadline: document.getElementById('resultHeadline'),
   metricsGrid: document.getElementById('metricsGrid'),
   lastUpdatedChip: document.getElementById('lastUpdatedChip'),
+  loadingIndicator: document.getElementById('loadingIndicator'),
+  loadingText: document.getElementById('loadingText'),
   summaryTab: document.getElementById('tab-summary'),
   reasonsTab: document.getElementById('tab-reasons'),
   policyTab: document.getElementById('tab-policy')
@@ -318,6 +320,8 @@ function setForecastData(data, sourceLabel = 'Forecast loaded') {
 
 async function fetchLiveForecast() {
   els.lastUpdatedChip.textContent = 'Loading live forecast…';
+  els.loadingIndicator.style.display = 'flex';
+  els.loadingText.textContent = 'Fetching forecast...';
   try {
     const res = await fetch('./api/metoffice-forecast.json', { cache: 'no-store' });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -325,9 +329,11 @@ async function fetchLiveForecast() {
     if (typeof data.source === 'string' && data.source.includes('Replace this stub')) {
       throw new Error('Backend response appears to be the stub placeholder.');
     }
+    els.loadingIndicator.style.display = 'none';
     setForecastData(data, 'Live backend forecast');
   } catch (err) {
     console.error(err);
+    els.loadingIndicator.style.display = 'none';
     els.lastUpdatedChip.textContent = 'Live backend unavailable';
     alert('Live forecast could not be loaded from the backend. Check your API route or backend configuration.');
   }
