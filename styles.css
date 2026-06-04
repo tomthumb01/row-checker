@@ -57,7 +57,17 @@ button, input, select { font: inherit; }
 .day-label { font-weight: 800; font-size: 15px; margin-bottom: 6px; }
 .day-date { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
 .day-mini { font-size: 12px; color: #3f566e; line-height: 1.45; }
-.result-card { position: static; overflow: hidden; border: 3px solid rgba(221,231,240,0.9); }
+.result-card {
+  position: relative !important;
+  z-index: 0 !important;
+  overflow: visible !important;
+  border: 3px solid rgba(221,231,240,0.9);
+  background-clip: padding-box;
+}
+.result-card::before {
+  display: none !important;
+  content: none !important;
+}
 .result-card.status-likely { border-color: #27ae60; }
 .result-card.status-marginal { border-color: #ff9800; }
 .result-card.status-unlikely { border-color: #d7263d; }
